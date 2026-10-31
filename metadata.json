@@ -1,0 +1,8 @@
+{
+  "name": "Remix LinkVault",
+  "description": "Save and organize links from social media into categorized collections for easy offline viewing later.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

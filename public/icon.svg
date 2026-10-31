@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="50%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a5b4fc" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.2" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#312e81" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Container -->
+  <rect width="512" height="512" rx="128" fill="url(#bg)" />
+
+  <!-- Inner Soft Border & Glow -->
+  <rect x="16" y="16" width="480" height="480" rx="112" stroke="white" stroke-opacity="0.15" stroke-width="6" />
+
+  <!-- Pocket / Vault Shield Body -->
+  <g filter="url(#shadow)">
+    <!-- Pocket Shape -->
+    <path d="M140 144 C140 126.3 154.3 112 172 112 L340 112 C357.7 112 372 126.3 372 144 L372 264 C372 344.6 304.6 400 256 416 C207.4 400 140 344.6 140 264 Z" fill="#ffffff" fill-opacity="0.96" />
+    
+    <!-- Accent Ribbon / Fold -->
+    <path d="M172 112 L256 184 L340 112 Z" fill="#4f46e5" fill-opacity="0.12" />
+    
+    <!-- Social Link Connection Icon -->
+    <!-- Chain Link 1 -->
+    <path d="M228 220 L204 244 C190.7 257.3 190.7 278.7 204 292 C217.3 305.3 238.7 305.3 252 292 L264 280" stroke="#4f46e5" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Chain Link 2 -->
+    <path d="M284 292 L308 268 C321.3 254.7 321.3 233.3 308 220 C294.7 206.7 273.3 206.7 260 220 L248 232" stroke="#6366f1" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Connector Link -->
+    <line x1="230" y1="282" x2="282" y2="230" stroke="#4338ca" stroke-width="20" stroke-linecap="round" />
+    
+    <!-- Offline Indicator Bolt / Dot -->
+    <circle cx="330" cy="170" r="14" fill="#10b981" stroke="#ffffff" stroke-width="4" />
+  </g>
+</svg>
