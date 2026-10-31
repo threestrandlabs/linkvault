@@ -64,6 +64,8 @@ export function filterAndSortPosts(posts: SavedPost[], filters: SearchFilterStat
       // 2. Strand Chip filters
       if (filters.filter) {
         if (filters.filter === 'unread' && !post.unread) return false;
+        if (filters.filter === 'starred' && !post.isStarred) return false;
+        if (filters.filter === 'archived' && !post.isArchived) return false;
         if (filters.filter.startsWith('t:')) {
           const tag = filters.filter.slice(2).toLowerCase();
           const postTags = (post.tags || []).map(t => t.toLowerCase());

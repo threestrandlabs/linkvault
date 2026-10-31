@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Share2, Check, X, Sparkles, Layers, HardDrive, AlertCircle, Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { IncomingSharePayload } from '../services/shareTarget';
 import { CategoryDef, SavedPost } from '../types';
 
@@ -8,7 +7,7 @@ interface IncomingShareToastProps {
   categories: CategoryDef[];
   onConfirmSave: (post: SavedPost) => void;
   onDismiss: () => void;
-  onAddCategory?: (category: CategoryDef) => void;
+  onAddCategory: (name: string, emoji?: string) => void;
 }
 
 export const IncomingShareToast: React.FC<IncomingShareToastProps> = ({
@@ -18,47 +17,29 @@ export const IncomingShareToast: React.FC<IncomingShareToastProps> = ({
   onDismiss,
   onAddCategory,
 }) => {
-  if (!payload) return null;
-
-  const [selectedCat, setSelectedCat] = useState<string>(payload.suggestedCategory || '');
-  const [customTitle, setCustomTitle] = useState(payload.title || '');
+  const [selectedCat, setSelectedCat] = useState<string>(payload?.suggestedCategory || '');
+  const [customTitle, setCustomTitle] = useState(payload?.title || '');
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newCatName, setNewCatName] = useState('');
-  const [newCatEmoji, setNewCatEmoji] = useState('📁');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Update selected category when payload changes
   useEffect(() => {
     if (payload) {
-      setSelectedCat(payload.suggestedCategory || (categories.length > 0 ? categories[0].id : 'Food'));
+      setSelectedCat(payload.suggestedCategory || categories[0]?.name || '');
       setCustomTitle(payload.title || '');
       setIsCreatingNew(false);
       setErrorMessage('');
     }
   }, [payload, categories]);
 
+  if (!payload) return null;
+
   const handleCreateNewCategory = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanName = newCatName.trim();
-    if (!cleanName) return;
-
-    const newCategory: CategoryDef = {
-      id: cleanName,
-      name: cleanName,
-      emoji: newCatEmoji,
-      color: 'indigo',
-      bgLight: 'bg-indigo-50',
-      bgDark: 'dark:bg-indigo-950/40',
-      textColor: 'text-indigo-700',
-      borderColor: 'border-indigo-200',
-      description: `${cleanName} links`,
-      isDefault: false,
-    };
-
-    if (onAddCategory) {
-      onAddCategory(newCategory);
-    }
-    setSelectedCat(newCategory.id);
+    const clean = newCatName.trim();
+    if (!clean) return;
+    onAddCategory(clean, '📁');
+    setSelectedCat(clean);
     setIsCreatingNew(false);
     setNewCatName('');
   };
@@ -92,154 +73,111 @@ export const IncomingShareToast: React.FC<IncomingShareToastProps> = ({
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-md w-full animate-in slide-in-from-bottom-5 duration-200">
-      <div className="rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500 shadow-2xl p-5 text-slate-900 dark:text-slate-100 max-h-[85vh] overflow-y-auto">
-        <div className="flex items-start justify-between gap-3 mb-2.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">
-              <Share2 className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                Share Sheet Received
-              </span>
-              <h3 className="text-sm font-bold truncate max-w-[240px]">
-                {payload.title || `${payload.platform} Link`}
-              </h3>
-            </div>
-          </div>
+    <div className="fixed bottom-4 right-4 left-4 sm:left-auto z-50 sm:max-w-md w-auto sm:w-full">
+      <div className="blueprint bg-[var(--bg)] text-[var(--text)] p-4 max-h-[75vh] overflow-y-auto">
+        <i className="corner tl"></i>
+        <i className="corner tr"></i>
+        <i className="corner bl"></i>
+        <i className="corner br"></i>
 
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--p)]">
+              Share Sheet Received
+            </span>
+            <h3 className="text-sm font-semibold truncate max-w-[240px]">
+              {payload.title || `${payload.platform} link`}
+            </h3>
+          </div>
           <button
             onClick={onDismiss}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1 text-[var(--muted)] hover:text-[var(--text)] cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            ✕
           </button>
         </div>
 
-        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 font-mono mb-3">
-          {payload.cleanUrl}
-        </p>
+        <p className="text-xs text-[var(--muted)] truncate mb-3">{payload.cleanUrl}</p>
 
-        {/* Category Auto-Detection Banner */}
         <div
-          className={`p-2.5 rounded-xl text-xs mb-3 flex items-start gap-2 border ${
-            payload.isClearMatch
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
-              : 'bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border-amber-200 dark:border-amber-800'
+          className={`p-2.5 text-xs mb-3 border ${
+            payload.isClearMatch ? 'border-[var(--p)] bg-[var(--ptint)]' : 'border-amber-500/30 bg-amber-500/10'
           }`}
         >
           {payload.isClearMatch ? (
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+            <span>
+              <strong>Auto-assigned to {payload.suggestedCategory}:</strong> {payload.categoryReason}
+            </span>
           ) : (
-            <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <span>No clear category determined. Please select or create one below.</span>
           )}
-          <div className="text-[11px] leading-snug">
-            {payload.isClearMatch ? (
-              <span>
-                <strong>Auto-assigned to {payload.suggestedCategory}:</strong> {payload.categoryReason}
-              </span>
-            ) : (
-              <span>
-                <strong>No clear category determined.</strong> Please manually select below or create a new category.
-              </span>
-            )}
-          </div>
         </div>
 
-        {errorMessage && (
-          <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 mb-2">
-            {errorMessage}
-          </p>
-        )}
+        {errorMessage && <p className="text-xs font-semibold text-[var(--acc)] mb-2">{errorMessage}</p>}
 
-        {/* Category Selection / Creation */}
-        <div className="mb-4 space-y-2">
+        <div className="mb-3 space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-              <Layers className="w-3 h-3 text-indigo-500" />
-              <span>Category: {selectedCat && `(${selectedCat})`}</span>
+            <label className="text-[11px] font-semibold text-[var(--muted)] uppercase tracking-wider">
+              Category
             </label>
-
             <button
               type="button"
               onClick={() => setIsCreatingNew(!isCreatingNew)}
-              className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+              className="text-[11px] font-semibold text-[var(--p)] cursor-pointer hover:underline"
             >
-              <Plus className="w-3 h-3" />
-              <span>+ New Category</span>
+              + New category
             </button>
           </div>
 
-          {/* Inline category creation form */}
           {isCreatingNew && (
-            <form onSubmit={handleCreateNewCategory} className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 space-y-2 text-xs">
-              <span className="font-semibold text-indigo-900 dark:text-indigo-200">
-                New Category Name:
-              </span>
-              <div className="flex gap-1.5">
-                <input
-                  type="text"
-                  placeholder="e.g. Podcasts, Architecture"
-                  value={newCatName}
-                  onChange={e => setNewCatName(e.target.value)}
-                  className="flex-1 px-2.5 py-1 text-xs rounded-lg border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-                <button
-                  type="submit"
-                  className="px-2.5 py-1 bg-indigo-600 text-white rounded-lg font-bold text-xs shadow-sm hover:bg-indigo-700"
-                >
-                  Create
-                </button>
-              </div>
+            <form onSubmit={handleCreateNewCategory} className="flex gap-1.5">
+              <input
+                type="text"
+                placeholder="e.g. Podcasts"
+                value={newCatName}
+                onChange={e => setNewCatName(e.target.value)}
+                className="flex-1 px-2.5 py-1 text-xs border border-[var(--line)] bg-[var(--surf)] text-[var(--text)] outline-none focus:border-[var(--p)]"
+              />
+              <button type="submit" className="px-2.5 py-1 bg-[var(--p)] text-[var(--on-p)] text-xs font-semibold cursor-pointer">
+                Create
+              </button>
             </form>
           )}
 
-          {/* Category Chips */}
-          <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+          <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
             {categories.map(cat => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => {
-                  setSelectedCat(cat.id);
+                  setSelectedCat(cat.name);
                   setErrorMessage('');
                 }}
-                className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
-                  selectedCat === cat.id
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                className={`px-2.5 py-1 text-xs font-medium border cursor-pointer transition ${
+                  selectedCat === cat.name
+                    ? 'bg-[var(--p)] text-[var(--on-p)] border-[var(--p)]'
+                    : 'bg-transparent text-[var(--text)] border-[var(--line)] hover:bg-[var(--ptint)]'
                 }`}
               >
-                <span>{cat.emoji}</span>
-                <span>{cat.name}</span>
-                {selectedCat === cat.id && <Check className="w-3 h-3" />}
+                {cat.emoji} {cat.name}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
-          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-            <HardDrive className="w-3 h-3" />
-            Saves offline to vault
-          </span>
-
-          <div className="flex gap-2">
-            <button
-              onClick={onDismiss}
-              className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              Dismiss
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/20 active:scale-95 cursor-pointer"
-            >
-              <Check className="w-3.5 h-3.5" />
-              Save Offline
-            </button>
-          </div>
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--line)]">
+          <button
+            onClick={onDismiss}
+            className="px-3 py-1.5 text-xs font-semibold text-[var(--muted)] cursor-pointer hover:text-[var(--text)]"
+          >
+            Dismiss
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-4 py-1.5 bg-[var(--btn)] text-white text-xs font-semibold cursor-pointer hover:brightness-105"
+          >
+            Save offline
+          </button>
         </div>
       </div>
     </div>

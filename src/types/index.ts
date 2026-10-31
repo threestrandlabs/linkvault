@@ -50,7 +50,6 @@ export interface CategoryDef {
   isDefault?: boolean;
 }
 
-export type StrandScreen = 'home' | 'add' | 'detail' | 'collections' | 'settings';
 export type StrandAppearance = 'Light' | 'Dark' | 'System';
 export type StrandOpenIn = 'In app' | 'Browser';
 
@@ -58,4 +57,13 @@ export interface StrandPrefs {
   fetch: boolean;
   thumbs: boolean;
   unread: boolean;
+}
+
+export interface NewLinkDraft {
+  url: string;
+  title: string;
+  image?: string;
+  note?: string;
+  collection: string;
+  tags: string[];
 }
