@@ -38,7 +38,7 @@ service cloud.firestore {
 
 ## Environment variables
 
-Copy `.env.example` to `.env.production` (or `.env.local` for local dev) and fill in your Firebase web app config:
+For local dev, copy `.env.example` to `.env.local` (gitignored) and fill in your Firebase web app config. Production builds get the same names from GitHub Actions repo secrets:
 
 ```
 VITE_FIREBASE_API_KEY=
@@ -49,7 +49,7 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
-These are the public Firebase **web app** config values (not secrets) — Firebase access control is enforced by the security rules above, not by hiding this config. `.env.production` is committed so the GitHub Pages build can read it; `.env`/`.env.local` stay gitignored.
+These are the public Firebase **web app** config values — Firebase access control is enforced by the security rules above, not by hiding this config. They still must not be committed: all `.env*` files except `.env.example` are gitignored, and the key must be restricted by HTTP referrer and API in Google Cloud. See [SECURITY.md](SECURITY.md).
 
 If these vars are missing, the app still builds and runs, but shows a "Firebase is not configured" message instead of the sign-in screen.
 
@@ -67,5 +67,5 @@ To point a static build at a running metadata server, build with `VITE_API_BASE=
 ## Deploy
 
 1. `firebase deploy --only firestore:rules` (or paste `firestore.rules` into the console) so user data stays private.
-2. `npm run build` outputs `dist/` with base `/linkvault/`, reading Firebase config from `.env.production`.
-3. Publish `dist/` to the `gh-pages` branch.
+2. Pushing to `main` runs `.github/workflows/deploy.yml`, which builds `dist/` (base `/linkvault/`) with the `VITE_FIREBASE_*` repo secrets and deploys it with GitHub Pages actions. Settings > Pages > Source must be set to **GitHub Actions**.
+3. Never commit `dist/` or publish it to a branch by hand.
