@@ -1,0 +1,15 @@
+# Findings gitleaks should skip. Fingerprints only (commit:file:rule:line); no secret values here.
+# Only add an entry after confirming it is a false positive, or a historical leak that has
+# already been restricted/rotated and is tracked elsewhere.
+
+# False positives: localStorage key-name constants, not credentials.
+d16bbfa339c6b11ca76d7f3d0db8ff89c937226d:src/services/storage.ts:generic-api-key:11
+d16bbfa339c6b11ca76d7f3d0db8ff89c937226d:src/services/storage.ts:generic-api-key:12
+d16bbfa339c6b11ca76d7f3d0db8ff89c937226d:src/services/storage.ts:generic-api-key:13
+src/services/storage.ts:generic-api-key:3
+
+# Known historical leak of the Firebase web API key (GitHub secret-scanning alert #1).
+# Still in git history; the fix is restricting/rotating the key in Google Cloud, not this file.
+# Listed so full-history scans don't fail on a leak that is already being handled.
+8a1c2af7a7a652f904fc556a72a22d8aba2b49fe:.env.production:gcp-api-key:2
+78f8529e4b9318ed0c91727172f20cb29d907ff3:assets/index-wJQGJX2p.js:gcp-api-key:39
